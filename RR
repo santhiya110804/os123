@@ -1,0 +1,47 @@
+#include <stdio.h>
+
+#define MAX_PROCESSES 10
+#define TIME_QUANTUM 4
+
+typedef struct {
+    int process_id;
+    int burst_time;
+    int remaining_time;
+} Process;
+
+int main() {
+    Process processes[MAX_PROCESSES];
+    int num_processes, total_burst_time = 0;
+
+    printf("Enter the number of processes: ");
+    scanf("%d", &num_processes);
+
+    // Input burst time for each process
+    for (int i = 0; i < num_processes; i++) {
+        printf("Enter burst time for process %d: ", i + 1);
+        scanf("%d", &processes[i].burst_time);
+        processes[i].process_id = i + 1;
+        processes[i].remaining_time = processes[i].burst_time;
+        total_burst_time += processes[i].burst_time;
+    }
+
+    // Simulate round-robin scheduling
+    printf("\nRound Robin Scheduling (Time Quantum = %d)\n", TIME_QUANTUM);
+    printf("Process\t| Turnaround Time\n");
+    printf("------------------------\n");
+
+    int current_time = 0;
+    while (total_burst_time > 0) {
+        for (int i = 0; i < num_processes; i++) {
+            if (processes[i].remaining_time > 0) {
+                int time_executed = (processes[i].remaining_time >= TIME_QUANTUM) ? TIME_QUANTUM : processes[i].remaining_time;
+                processes[i].remaining_time -= time_executed;
+                total_burst_time -= time_executed;
+                current_time += time_executed;
+                printf("P%d\t|\t%d\n", processes[i].process_id, current_time);
+            }
+        }
+    }
+
+    return 0;
+}
